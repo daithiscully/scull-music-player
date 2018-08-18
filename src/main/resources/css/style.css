@@ -1,0 +1,16 @@
+.background {
+  -fx-background-color: black
+}
+
+.button {
+  -fx-background-color: #dcdcdc
+}
+
+.login {
+  -fx-background-color: linear-gradient(#ffffff 0%, #8bca83 100%);
+}
+
+.now-playing-area {
+  -fx-background-color: #56a7ff;
+  -fx-font-family: Roboto;
+}
