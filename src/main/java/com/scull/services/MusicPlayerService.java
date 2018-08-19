@@ -1,11 +1,9 @@
 package com.scull.services;
 
-import com.scull.controllers.MusicPlayerController;
 import java.io.File;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
-import javafx.stage.FileChooser.ExtensionFilter;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j

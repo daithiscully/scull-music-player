@@ -6,6 +6,7 @@ import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXSlider;
 import com.jfoenix.controls.JFXTextField;
 import com.scull.models.Song;
+import com.scull.services.MusicLibraryService;
 import com.scull.services.MusicPlayerService;
 import java.io.File;
 import java.net.URL;
@@ -57,13 +58,13 @@ public class MusicPlayerController implements Initializable {
     playBtn.setOnMouseClicked(e -> resumeMusic());
     stopBtn.setOnMouseClicked(event -> stopMusic());
     pauseBtn.setOnMouseClicked(event -> pauseMusic());
-
-    loadInitialLibrary();
+    MusicLibraryService.loadInitialLibrary(libraryTreeView);
     libraryTreeView.setOnMouseClicked(this::songSelection);
     trackerSlider.valueProperty().setValue(100);
     trackerSlider.valueProperty()
         .addListener((observable, oldValue, newValue) -> changeVolume(newValue));
-    addFolderToLibraryBtn.setOnMouseClicked(event -> addFolderToLibrary());
+    addFolderToLibraryBtn.setOnMouseClicked(
+        event -> MusicLibraryService.addFolderToLibrary(libraryTreeView, mainPane));
   }
 
   private void changeVolume(Number newVolume) {
@@ -75,36 +76,12 @@ public class MusicPlayerController implements Initializable {
   private void songSelection(MouseEvent event) {
     if (event.getClickCount() == 2) {
       TreeItem<Song> item = libraryTreeView.getSelectionModel().getSelectedItem();
-      if (isNull(item.getValue().getFile())) {
-        return;
-      }
-      log.info(item.getValue().getName());
-      this.currentMusicFile = item.getValue().getFile();
-      this.playMusicFile();
-    }
-  }
-
-  // REQUIREMENT - A folder/path with audio files
-  private void loadInitialLibrary() {
-    File folder = new File("E:\\workspace\\personal\\scull-music-player\\sample-audio-files");
-
-    TreeItem<Song> root = new TreeItem<>(Song.builder().name("Root").build());
-    root.setExpanded(true);
-    TreeItem<Song> artist = new TreeItem<>(Song.builder().name("Artist").build());
-    root.getChildren().addAll(artist);
-
-    for (final File fileEntry : folder.listFiles()) {
-      if (fileEntry.isDirectory()) {
-        log.info("Found a nested folder, ignoring.");
-      } else {
-        log.info("Loading file: {}", fileEntry.getName());
-        Song song = Song.builder().name(fileEntry.getName()).file(fileEntry).build();
-        TreeItem<Song> songTreeItem = new TreeItem<>(song);
-        artist.getChildren().addAll(songTreeItem);
+      if (!isNull(item.getValue().getFile())) {
+        log.info(item.getValue().getName());
+        this.currentMusicFile = item.getValue().getFile();
+        this.playMusicFile();
       }
     }
-    artist.setExpanded(true);
-    libraryTreeView.setRoot(root);
   }
 
   private void openMusicFile() {
@@ -117,10 +94,10 @@ public class MusicPlayerController implements Initializable {
 
   private void playMusicFile() {
     log.info("Playing {}", currentMusicFile.getName());
-    nowPlayingTXT.setText("Playing: " + currentMusicFile.getName());
     Media media = new Media(currentMusicFile.toURI().toString());
     stopMusic();
     mediaPlayer = new MediaPlayer(media);
+    nowPlayingTXT.setText("Playing: " + currentMusicFile.getName());
     mediaPlayer.play();
     stopBtn.setVisible(true);
     pauseBtn.setVisible(true);
@@ -157,27 +134,5 @@ public class MusicPlayerController implements Initializable {
     stopBtn.setVisible(false);
     pauseBtn.setVisible(false);
     mediaPlayer = null;
-  }
-
-  private void addFolderToLibrary() {
-    TreeItem<Song> root = libraryTreeView.getRoot();
-    File folder = MusicPlayerService.openMusicFolder(mainPane);
-    Song songFolder = Song.builder().name(folder.getName()).file(folder).build();
-    TreeItem<Song> newSongFolderItem = new TreeItem<>(songFolder);
-    root.getChildren().addAll(newSongFolderItem);
-
-    for (final File fileEntry : folder.listFiles()) {
-      if (fileEntry.isDirectory()) {
-        log.info("Found a nested folder, ignoring.");
-      } else {
-        log.info("Loading file: {}", fileEntry.getName());
-        if (fileEntry.getName().endsWith(".mp3")) {
-          Song song = Song.builder().name(fileEntry.getName()).file(fileEntry).build();
-          TreeItem<Song> songTreeItem = new TreeItem<>(song);
-          newSongFolderItem.getChildren().addAll(songTreeItem);
-        }
-      }
-    }
-
   }
 }
