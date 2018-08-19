@@ -67,5 +67,16 @@
             </ImageView>
          </graphic>
       </JFXButton>
+      <HBox layoutX="83.0" layoutY="318.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="227.0" prefWidth="772.0" styleClass="library">
+         <children>
+            <Pane prefHeight="227.0" prefWidth="480.0">
+               <children>
+                  <TreeView fx:id="libraryTreeView" prefHeight="227.0" prefWidth="480.0" />
+               </children>
+            </Pane>
+         </children>
+      </HBox>
+      <JFXSlider fx:id="trackerSlider" layoutX="176.0" layoutY="104.0" prefHeight="14.0" prefWidth="533.0" value="100.0" />
+      <JFXButton fx:id="addFolderToLibraryBtn" layoutX="83.0" layoutY="288.0" text="+ Add folder" />
    </children>
 </AnchorPane>
